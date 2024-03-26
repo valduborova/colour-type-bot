@@ -1,0 +1,6 @@
+dlib==19.24.2
+numpy==1.26.4
+openai==1.14.3
+Pillow==10.2.0
+python-dotenv==1.0.1
+telegram==0.0.1
