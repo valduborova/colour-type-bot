@@ -8,19 +8,13 @@ import ai
 import get_colors
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-# Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Define your command handlers. These usually take the two arguments: bot and update.
 def start_command(update, context):
     """Send a message when the command /start is issued."""
     update.message.reply_text("Привет! Я твой ассистент по определению цветотипа.\nОтправь мне команду /colourtype и я помогу определить твой цветотип.")
-
-# def help_command(update, context):
-#     """Send a message when the command /help is issued."""
-#     update.message.reply_text('Help! Please tell me how I can assist you.')
     
 def colourtype_command(update, context):
     """Send a message when the command /colourtype is issued."""
@@ -29,7 +23,6 @@ def colourtype_command(update, context):
 
 def get_color_type(update, context):
     """Process the photo and determine the color type."""
-    # Send meassage to the user that proccessing is started
     update.message.reply_text('Определяем ваш цветотип...')
     
     photo = update.message.photo[-1]  # Get the last photo sent by the user
@@ -59,24 +52,16 @@ def main():
 
     updater = Updater(os.getenv("TOKEN"), use_context=True)
 
-    # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    # On different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start_command))
-    # dp.add_handler(CommandHandler("help", help_command))
+
     dp.add_handler(CommandHandler("colourtype", colourtype_command))
 
-    # On non-command i.e. message - echo the message on Telegram
-    dp.add_handler(MessageHandler(Filters.text, echo))
-
-    # Log all errors
     dp.add_error_handler(error)
 
-    # Create a handler for photo messages
     dp.add_handler(MessageHandler(Filters.photo, get_color_type))
 
-    # Start the Bot
     updater.start_polling()
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT, SIGTERM or SIGABRT.

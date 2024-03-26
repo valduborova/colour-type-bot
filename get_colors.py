@@ -4,15 +4,12 @@ import numpy as np
 
 
 def extract_lip_color(image_path):
-    # Load the detector and predictor
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-    # Load the image
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Detect faces
     faces = detector(gray)
 
     for face in faces:
@@ -22,7 +19,6 @@ def extract_lip_color(image_path):
         lip_mask = np.zeros_like(gray)
         lip_mask = cv2.fillPoly(lip_mask, [lip_points], 255)
 
-        # Extract lip color
         lip_color = cv2.bitwise_and(image, image, mask=lip_mask)
         
         mean_lip_color = cv2.mean(lip_color, mask=lip_mask)[:3]  # Ignoring the alpha channel if present
@@ -31,46 +27,33 @@ def extract_lip_color(image_path):
 
 
 def extract_eyebrow_color(image_path):
-    # Load the detector and predictor.
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
-    # Load the image.
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Detect faces.
     faces = detector(gray)
 
     for face in faces:
         landmarks = predictor(gray, face)
 
-        # Eyebrow processing.
         # Using only one eyebrow for better shape.
         eyebrow_points = np.array([[landmarks.part(x).x, landmarks.part(x).y] for x in range(18, 22)])
-        # left_eyebrow_points = np.array([[landmarks.part(x).x, landmarks.part(x).y] for x in range(22, 27)])
-        # eyebrow_points = np.concatenate((right_eyebrow_points, left_eyebrow_points), axis=0)
-        
         eyebrow_mask = np.zeros_like(gray)
         eyebrow_mask = cv2.fillPoly(eyebrow_mask, [eyebrow_points], 255)
-
-        # Extract eyebrow color
-        eyebrow_color = cv2.bitwise_and(image, image, mask=eyebrow_mask)
-        
+        eyebrow_color = cv2.bitwise_and(image, image, mask=eyebrow_mask) 
         mean_eyebrow_color = cv2.mean(eyebrow_color, mask=eyebrow_mask)[:3] 
 
     return mean_eyebrow_color
 
 
 def extract_skin_color(image_path):
-    # Load the detector and predictor
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-    # Load the image
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Detect faces
     faces = detector(gray)
 
     for face in faces:
@@ -94,11 +77,6 @@ def extract_skin_color(image_path):
         chin_color = cv2.bitwise_and(image, image, mask=chin_mask)
         mean_chin_color = cv2.mean(chin_color, mask=chin_mask)[:3]
         
-        # cv2.imshow("Eyebrow Region", cheek_color)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
-
-        
         mean_skin_color = ()
         for i in range(3):
             mean_skin_color += (int((mean_cheek_color[i] + mean_nose_color[i] + mean_chin_color[i]) / 3),)
@@ -107,31 +85,23 @@ def extract_skin_color(image_path):
     
 
 def extract_eye_color(image_path):
-    # Load the detector and predictor
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-    # Load the image
     image = cv2.imread(image_path)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Detect faces
     faces = detector(gray)
 
     for face in faces:
         landmarks = predictor(gray, face)
 
+        # Using only one eye.
         eye_points = np.array([[landmarks.part(36).x, landmarks.part(36).y], [landmarks.part(37).x, landmarks.part(37).y], [landmarks.part(41).x, landmarks.part(41).y]])
-        # left_eye_points = np.array([[landmarks.part(x).x, landmarks.part(x).y] for x in range(42, 48)])
-        # eye_points = np.concatenate((right_eye_points, left_eye_points), axis=0)
-        
         eye_mask = np.zeros_like(gray)
         eye_mask = cv2.fillPoly(eye_mask, [eye_points], 255)
-
-        # Extract eye color
-        eye_color = cv2.bitwise_and(image, image, mask=eye_mask)
-        
-        mean_eye_color = cv2.mean(eye_color, mask=eye_mask)[:3]  # Ignoring the alpha channel if present
+        eye_color = cv2.bitwise_and(image, image, mask=eye_mask) 
+        mean_eye_color = cv2.mean(eye_color, mask=eye_mask)[:3]
         
         return mean_eye_color
 
